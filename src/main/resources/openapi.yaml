@@ -1,0 +1,211 @@
+openapi: 3.0.1
+info:
+  title: Article Management
+  description: Article Management CRUD API.
+  version: 1.0.0
+servers:
+  - url: /v1
+tags:
+  - name: Order Rules
+    description: CRUD api for order rule
+  - name: kit
+    description: CRUD api for kit
+paths:
+  /orderrules:
+    get:
+      tags:
+        - Order Rules
+      summary: Get list of order rules
+      operationId: getOrderRules
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderRule'
+        404:
+          description: order rule with given order id not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorDetails'
+        500:
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorDetails'
+    post:
+      tags:
+        - Order Rules
+      summary: Add an order rule
+      operationId: addOrderRule
+      requestBody:
+        description: Add a new order rule
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRule'
+        required: true
+      responses:
+        200:
+          description: Order rule added
+          content:
+            application/json:
+              schema:
+                type: string
+        default:
+          $ref: '#/components/responses/Exception'
+  /orderrules/{orderRuleId}:
+    get:
+      tags:
+        - Order Rules
+      summary: Get order rule by order rule id
+      operationId: getOrderRuleById
+      parameters:
+        - name: orderRuleId
+          in: path
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderRule'
+        default:
+          $ref: '#/components/responses/Exception'
+
+  /kit:
+    get:
+      tags:
+        - kit
+      summary: Get list of kit articles
+      operationId: getkitArticles
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KitArticle'
+    post:
+      tags:
+        - kit
+      summary: Add a kit article
+      operationId: addKitArticle
+      requestBody:
+        description: Add a new kit article
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KitArticle'
+        required: true
+      responses:
+        200:
+          description: Order rule added
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  responses:
+    Exception:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDetails'
+  schemas:
+    BaseModel:
+      type: object
+      properties:
+        commonAttribute:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    OrderRule:
+      allOf:
+        - $ref: '#/components/schemas/BaseModel'
+      type: object
+      properties:
+        orderRuleId:
+          type: integer
+          format: int64
+          description: unique order id for a rule
+        itemNumber:
+          type: integer
+          format: int64
+        itemDescription:
+          type: string
+        quantity:
+          type: integer
+          format: int64
+        departmentList:
+          type: array
+          items:
+            type: integer
+        activeDate:
+          type: string
+          format: date-time
+        inactiveDate:
+          type: string
+          format: date-time
+
+    KitArticle:
+      allOf:
+        - $ref: '#/components/schemas/BaseModel'
+      type: object
+      properties:
+        kitId:
+          type: integer
+          format: int64
+          description: unique order id for a rule
+        kitDesc:
+          type: string
+        itemDescription:
+          type: string
+        quantity:
+          type: integer
+          format: int64
+        leafArticleList:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeafArticle'
+
+    LeafArticle:
+      type: object
+      properties:
+        articleId:
+          type: string
+        quantity:
+          type: integer
+          format: int64
+    ErrorDetails:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date
+        message:
+          type: string
+        status:
+          type: integer
+          format: int32
+        details:
+          type: string
